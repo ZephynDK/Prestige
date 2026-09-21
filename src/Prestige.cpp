@@ -7,7 +7,7 @@
 
 auto& prestigeConfigSettings = PrestigeConfigSettings::Instance();
 
-void PrestigePlayerScript::OnLogin(Player* player)
+void PrestigePlayerScript::OnPlayerLogin(Player* player)
 {
     if (!player)
     {
@@ -51,7 +51,7 @@ void CheckForUpdatedMaxStats(Player* player)
     }
 }
 
-void PrestigePlayerScript::OnLogout(Player* player)
+void PrestigePlayerScript::OnPlayerLogout(Player* player)
 {
     if (!player)
     {
@@ -64,7 +64,7 @@ void PrestigePlayerScript::OnLogout(Player* player)
     SavePrestigeStatsForPlayer(player);
 }
 
-/*called when a player gains a prestige level via onlevelchanged, kept seperate incase we decide to have bonuses outside of prestige level*/
+/*called when a player gains a prestige level via onPlayerlevelchanged, kept seperate incase we decide to have bonuses outside of prestige level*/
 void AddPrestigePoint(Player* player)
 {
     auto prestigeStats = GetPrestigeStats(player);
@@ -637,7 +637,7 @@ void PrestigeWorldScript::OnAfterConfigLoad(bool reload)
     LoadPrestigeStats();
 }
 
-void PrestigePlayerScript::OnLevelChanged(Player* player, uint8 oldLevel)
+void PrestigePlayerScript::OnPlayerLevelChanged(Player* player, uint8 oldLevel)
 {
     if (oldLevel == prestigeConfigSettings.GetIntendedMaxLevel() && player->GetLevel() == sWorld->getIntConfig(CONFIG_MAX_PLAYER_LEVEL))
     {
@@ -1044,7 +1044,7 @@ void PrestigeResistanceStatsMenu(Player* player)
         return;
 }
 
-void PrestigePlayerScript::OnGossipSelect(Player* player, uint32 menu_id, uint32 sender, uint32 action)
+void PrestigePlayerScript::OnPlayerGossipSelect(Player* player, uint32 menu_id, uint32 sender, uint32 action)
 {
     if (action == PRESTIGE_GOSSIP_ALLOCATE_MAIN_MENU)
     {
