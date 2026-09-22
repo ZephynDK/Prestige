@@ -150,6 +150,9 @@ struct PrestigeConfigSettings
         PrestigeConfigSettings() = default;
         PrestigeConfigSettings(const PrestigeConfigSettings&) = delete;
         PrestigeConfigSettings& operator=(const PrestigeConfigSettings&) = delete;
+		
+		//for Sync config
+		bool _isAccountSyncEnabled = false;
     public:
         static PrestigeConfigSettings& Instance()
         {
@@ -196,6 +199,10 @@ struct PrestigeConfigSettings
         
         uint16 GetLevelUpFormulaK() const { return _levelUpFormulaK; }
         void SetLevelUpFormulaK(uint16 value) { _levelUpFormulaK = value; }
+		
+	//for Sync config	
+	void SetAccountSyncEnabled(bool enable) { _isAccountSyncEnabled = enable; }
+    bool IsAccountSyncEnabled() const { return _isAccountSyncEnabled; }
 };
 const char* StatNames[PRESTIGE_STAT_MAX] = {
     "Prestige Level", // STAT_PRESTIGELEVEL
