@@ -762,10 +762,11 @@ void PrestigeMainMenu(Player* player)
         player->SendSystemMessage("You cannot change prestige stats while in combat!");
         return;
     }
+	//removed to allow alts to use points
     if(player->GetLevel()<prestigeConfigSettings.GetIntendedMaxLevel())
     {
-        player->SendSystemMessage(Acore::StringFormat("You cannot access the prestige system until you hit the max level of {}", prestigeConfigSettings.GetIntendedMaxLevel()));
-        return;
+        //player->SendSystemMessage(Acore::StringFormat("You cannot access the prestige system until you hit the max level of {}", prestigeConfigSettings.GetIntendedMaxLevel()));
+        //return;
     }
     std::string optGetPrestigeLevel = Acore::StringFormat("|TInterface\\GossipFrame\\TrainerGossipIcon:16|t Current Prestige Level: {} (click for details)",prestigeStats->stats[PRESTIGE_STAT_PRESTIGELEVEL]);
     AddGossipItemFor(player, GOSSIP_ICON_DOT, optGetPrestigeLevel, GOSSIP_SENDER_MAIN, PRESTIGE_GOSSIP_DISPLAY_CURRENT_STATS);
