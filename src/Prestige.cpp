@@ -16,22 +16,26 @@ void SyncAccountPrestigeLevel(Player* player, PrestigeStats* prestigeStats)
 
     uint32 accountId = player->GetSession()->GetAccountId();
 
-    // Find the highest prestige level across all characters belonging to this account ID
+    // COALESCE ensures that if MAX() returns NULL, MySQL safely outputs 0
     auto qResult = CharacterDatabase.Query(
-        "SELECT MAX(p.prestigelevel) FROM character_prestige_stats p "
+        "SELECT COALESCE(MAX(p.prestigelevel), 0) FROM character_prestige_stats p "
         "INNER JOIN characters c ON p.guid = c.guid "
         "WHERE c.account = {}", accountId
     );
 
     if (!qResult)
+    {
+        LOG_INFO("module", "[PrestigeSync] Query failed for Account ID: {}", accountId);
         return;
+    }
 
     auto fields = qResult->Fetch();
     uint32 maxAccountPrestige = fields[0].Get<uint32>();
-
     uint32 currentPrestige = prestigeStats->stats[PRESTIGE_STAT_PRESTIGELEVEL];
 
-    // If a higher prestige level exists on the account, sync this character up
+    LOG_INFO("module", "[PrestigeSync] Player '{}' (Account: {}) - Current: {}, Max Account: {}", 
+        player->GetName(), accountId, currentPrestige, maxAccountPrestige);
+
     if (maxAccountPrestige > currentPrestige)
     {
         uint32 prestigeDiff = maxAccountPrestige - currentPrestige;
@@ -39,12 +43,14 @@ void SyncAccountPrestigeLevel(Player* player, PrestigeStats* prestigeStats)
         prestigeStats->stats[PRESTIGE_STAT_PRESTIGELEVEL] = maxAccountPrestige;
         prestigeStats->stats[PRESTIGE_STAT_UNALLOCATED] += prestigeDiff;
 
+        // Force save immediately so the database reflects the new sync state
+        SavePrestigeStatsForPlayer(player);
+
         player->SendSystemMessage(Acore::StringFormat(
             "|cff00FF00Your Prestige Level has been synchronized to your account's highest level: {} (+{} unallocated point(s)).|r",
             maxAccountPrestige, prestigeDiff
         ));
     }
-}
 
 
 void PrestigePlayerScript::OnPlayerLogin(Player* player)
