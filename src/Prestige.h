@@ -334,6 +334,9 @@ void DisablePrestigeStats(Player* /*player*/);
 bool TryAddPrestigeStat(PrestigeStats* /*attributes*/, uint32 /*attribute*/);
 void RespecPrestigeStats(PrestigeStats* /*attributes*/);
 
+//SYNC
+void SyncAccountPrestigeLevel(Player* player, PrestigeStats* prestigeStats);
+
 bool HasPrestigeStats(Player* /*player*/);
 bool IsPrestigeStatAtMax(uint32 /*attribute*/, uint32 /*value*/);
 uint32 GetPrestigeStatsToSpend(Player* /*player*/);

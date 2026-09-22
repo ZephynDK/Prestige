@@ -7,6 +7,46 @@
 
 auto& prestigeConfigSettings = PrestigeConfigSettings::Instance();
 
+
+// Sync of Prestigelevels from the account
+void SyncAccountPrestigeLevel(Player* player, PrestigeStats* prestigeStats)
+{
+    if (!player || !prestigeStats)
+        return;
+
+    uint32 accountId = player->GetSession()->GetAccountId();
+
+    // Find the highest prestige level across all characters belonging to this account ID
+    auto qResult = CharacterDatabase.Query(
+        "SELECT MAX(p.prestigelevel) FROM character_prestige_stats p "
+        "INNER JOIN characters c ON p.guid = c.guid "
+        "WHERE c.account = {}", accountId
+    );
+
+    if (!qResult)
+        return;
+
+    auto fields = qResult->Fetch();
+    uint32 maxAccountPrestige = fields[0].Get<uint32>();
+
+    uint32 currentPrestige = prestigeStats->stats[PRESTIGE_STAT_PRESTIGELEVEL];
+
+    // If a higher prestige level exists on the account, sync this character up
+    if (maxAccountPrestige > currentPrestige)
+    {
+        uint32 prestigeDiff = maxAccountPrestige - currentPrestige;
+
+        prestigeStats->stats[PRESTIGE_STAT_PRESTIGELEVEL] = maxAccountPrestige;
+        prestigeStats->stats[PRESTIGE_STAT_UNALLOCATED] += prestigeDiff;
+
+        player->SendSystemMessage(Acore::StringFormat(
+            "|cff00FF00Your Prestige Level has been synchronized to your account's highest level: {} (+{} unallocated point(s)).|r",
+            maxAccountPrestige, prestigeDiff
+        ));
+    }
+}
+
+
 void PrestigePlayerScript::OnPlayerLogin(Player* player)
 {
 if (!player)
@@ -1336,42 +1376,4 @@ void SC_AddPrestigeScripts()
     new PrestigeCreatureScript();
     new PrestigeUnitScript();
     new PrestigeCommand();
-}
-
-// Sync of Prestigelevels from the account
-void SyncAccountPrestigeLevel(Player* player, PrestigeStats* prestigeStats)
-{
-    if (!player || !prestigeStats)
-        return;
-
-    uint32 accountId = player->GetSession()->GetAccountId();
-
-    // Find the highest prestige level across all characters belonging to this account ID
-    auto qResult = CharacterDatabase.Query(
-        "SELECT MAX(p.prestigelevel) FROM character_prestige_stats p "
-        "INNER JOIN characters c ON p.guid = c.guid "
-        "WHERE c.account = {}", accountId
-    );
-
-    if (!qResult)
-        return;
-
-    auto fields = qResult->Fetch();
-    uint32 maxAccountPrestige = fields[0].Get<uint32>();
-
-    uint32 currentPrestige = prestigeStats->stats[PRESTIGE_STAT_PRESTIGELEVEL];
-
-    // If a higher prestige level exists on the account, sync this character up
-    if (maxAccountPrestige > currentPrestige)
-    {
-        uint32 prestigeDiff = maxAccountPrestige - currentPrestige;
-
-        prestigeStats->stats[PRESTIGE_STAT_PRESTIGELEVEL] = maxAccountPrestige;
-        prestigeStats->stats[PRESTIGE_STAT_UNALLOCATED] += prestigeDiff;
-
-        player->SendSystemMessage(Acore::StringFormat(
-            "|cff00FF00Your Prestige Level has been synchronized to your account's highest level: {} (+{} unallocated point(s)).|r",
-            maxAccountPrestige, prestigeDiff
-        ));
-    }
 }
