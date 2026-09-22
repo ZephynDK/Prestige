@@ -143,3 +143,11 @@ Prestige.LevelUpFormula.r = 1
 #        Default:     5
 #    
 Prestige.LevelUpFormula.k = 1
+
+#    Prestige.AccountSync.Enable
+#        Description: Synchronize the prestige level across all characters on the same account
+#                     to match the highest character's prestige level on login.
+#        Default:     0 - (Disabled)
+#                     1 - (Enabled)
+
+Prestige.AccountSync.Enable = 1
