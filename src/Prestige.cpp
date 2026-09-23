@@ -51,7 +51,7 @@ void SyncAccountPrestigeLevel(Player* player, PrestigeStats* prestigeStats)
             maxAccountPrestige, prestigeDiff
         ));
     }
-
+}
 
 void PrestigePlayerScript::OnPlayerLogin(Player* player)
 {
