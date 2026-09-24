@@ -135,7 +135,7 @@ void PrestigePlayerScript::OnPlayerLeaveCombat(Player* player)
     {
         return;
     }
-    if (player->IsDuringRemoveFromWorld() || !player->IsInWorld())
+    if (player->IsDuringRemoveFromWorld() || !player->IsInWorld() || !player->IsAlive())
     {
         return;
     }
