@@ -446,6 +446,11 @@ void SavePrestigeStatsForPlayer(Player* player)
 
 void ApplyPrestigeStats(Player* player, PrestigeStats* prestigeStats)
 {
+	// Safety Check 1: Do not apply auras if the player is dead or invalid
+    if (!player || !player->IsAlive())
+    {
+        return;
+    }
         for (int x = PRESTIGE_STAT_STAMINA; x<PRESTIGE_STAT_CONFIRMSPEND; ++x)
         {
             if (prestigeStats->stats[x] > 0)
